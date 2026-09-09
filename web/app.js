@@ -10,7 +10,7 @@ const warningCount = document.querySelector("#warning-count");
 const charCount = document.querySelector("#char-count");
 const draftsSelect = document.querySelector("#drafts");
 
-let mode = "markdown";
+let mode = "bbcode";
 let profile = "forum";
 let activeDraftId = null;
 let autosaveTimer = null;
@@ -40,18 +40,32 @@ function render() {
   }
 }
 
+function syncModeUi() {
+  document.querySelector("#mode-md").classList.toggle("active", mode === "markdown");
+  document.querySelector("#mode-bb").classList.toggle("active", mode === "bbcode");
+  editor.placeholder = mode === "bbcode" ? "Skriv BBCode här..." : "Skriv Markdown här...";
+
+  for (const el of document.querySelectorAll(".bbcode-only")) {
+    const disabled = mode !== "bbcode";
+    if (el.matches("button")) el.disabled = disabled;
+    if (el.matches("details")) {
+      if (disabled) el.open = false;
+      el.classList.toggle("mode-disabled", disabled);
+    }
+  }
+}
+
 function setMode(next) {
   if (next === mode) return;
   if (next === "bbcode") {
     editor.value = convertMarkdown(editor.value).output;
   } else {
-    const result = convertBBCode(editor.value);
-    editor.value = result.output;
+    editor.value = convertBBCode(editor.value).output;
   }
   mode = next;
-  document.querySelector("#mode-md").classList.toggle("active", mode === "markdown");
-  document.querySelector("#mode-bb").classList.toggle("active", mode === "bbcode");
+  syncModeUi();
   render();
+  scheduleAutosave();
 }
 
 function wrapSelection(open, close = open) {
@@ -60,8 +74,10 @@ function wrapSelection(open, close = open) {
   const selected = editor.value.slice(start, end);
   const before = editor.value.slice(0, start);
   const after = editor.value.slice(end);
-  const left = mode === "bbcode" ? `[${open}]` : ({ b: "**", i: "*", u: "++", highlight: "==" }[open] ?? "");
-  const right = mode === "bbcode" ? `[/${close}]` : ({ b: "**", i: "*", u: "++", highlight: "==" }[close] ?? "");
+  const markdownWrap = { b: "**", i: "*", u: "++" };
+  const left = mode === "bbcode" ? `[${open}]` : (markdownWrap[open] ?? "");
+  const right = mode === "bbcode" ? `[/${close}]` : (markdownWrap[close] ?? "");
+  if (!left && !right) return;
   editor.value = before + left + selected + right + after;
   const caretStart = start + left.length;
   editor.focus();
@@ -75,25 +91,35 @@ function blockSelection(tag) {
   const end = editor.selectionEnd;
   const selected = editor.value.slice(start, end) || "text";
   let value;
-  if (mode === "bbcode") value = `[${tag}]${selected}[/${tag}]`;
-  else if (tag === "quote") value = selected.split("\n").map(x => `> ${x}`).join("\n");
-  else if (tag === "spoiler") value = `:::spoiler\n${selected}\n:::`;
-  else value = `\`\`\`text\n${selected}\n\`\`\``;
+
+  if (mode === "bbcode") {
+    value = `[${tag}]${selected}[/${tag}]`;
+  } else if (["quote", "indent", "spoiler"].includes(tag)) {
+    value = selected.split("\n").map(x => `> ${x}`).join("\n");
+  } else if (["code", "noparse"].includes(tag)) {
+    value = `\`\`\`text\n${selected}\n\`\`\``;
+  } else {
+    return;
+  }
+
   editor.setRangeText(value, start, end, "select");
   render();
   scheduleAutosave();
 }
 
-function listSelection(ordered) {
+function listSelection(type) {
   const start = editor.selectionStart;
   const end = editor.selectionEnd;
   const lines = (editor.value.slice(start, end) || "item").split("\n");
   let value;
+
   if (mode === "bbcode") {
-    value = `[list${ordered ? "=1" : ""}]\n${lines.map(x => `[*]${x}`).join("\n")}\n[/list]`;
+    const suffix = type === "bullet" ? "" : `=${type}`;
+    value = `[list${suffix}]\n${lines.map(x => `[*]${x}`).join("\n")}\n[/list]`;
   } else {
-    value = lines.map((x, i) => ordered ? `${i + 1}. ${x}` : `- ${x}`).join("\n");
+    value = lines.map((x, i) => type === "bullet" ? `- ${x}` : `${i + 1}. ${x}`).join("\n");
   }
+
   editor.setRangeText(value, start, end, "select");
   render();
   scheduleAutosave();
@@ -107,6 +133,28 @@ function insertLink() {
   if (!url) return;
   const value = mode === "bbcode" ? `[url=${url}]${label}[/url]` : `[${label}](${url})`;
   editor.setRangeText(value, start, end, "select");
+  render();
+  scheduleAutosave();
+}
+
+function insertEmail() {
+  if (mode !== "bbcode") return;
+  const start = editor.selectionStart;
+  const end = editor.selectionEnd;
+  const selected = editor.value.slice(start, end);
+  const address = selected || prompt("E-postadress:", "");
+  if (!address) return;
+  editor.setRangeText(`[email]${address}[/email]`, start, end, "select");
+  render();
+  scheduleAutosave();
+}
+
+function insertSmiley(value) {
+  if (mode !== "bbcode") return;
+  const start = editor.selectionStart;
+  const end = editor.selectionEnd;
+  editor.setRangeText(value, start, end, "end");
+  editor.focus();
   render();
   scheduleAutosave();
 }
@@ -167,10 +215,9 @@ async function loadDraft(id) {
   if (!draft) return;
   activeDraftId = draft.id;
   editor.value = draft.content;
-  mode = draft.mode || "markdown";
+  mode = draft.mode || "bbcode";
   profile = draft.profile || "forum";
-  document.querySelector("#mode-md").classList.toggle("active", mode === "markdown");
-  document.querySelector("#mode-bb").classList.toggle("active", mode === "bbcode");
+  syncModeUi();
   document.querySelector("#profile-forum").classList.toggle("active", profile === "forum");
   document.querySelector("#profile-pm").classList.toggle("active", profile === "pm");
   render();
@@ -187,9 +234,13 @@ editor.addEventListener("input", () => { render(); scheduleAutosave(); });
 
 document.querySelectorAll("[data-wrap]").forEach(btn => btn.addEventListener("click", () => wrapSelection(btn.dataset.wrap)));
 document.querySelectorAll("[data-block]").forEach(btn => btn.addEventListener("click", () => blockSelection(btn.dataset.block)));
+document.querySelectorAll("[data-smiley]").forEach(btn => btn.addEventListener("click", () => insertSmiley(btn.dataset.smiley)));
 document.querySelector("#link-btn").addEventListener("click", insertLink);
-document.querySelector("#ul-btn").addEventListener("click", () => listSelection(false));
-document.querySelector("#ol-btn").addEventListener("click", () => listSelection(true));
+document.querySelector("#email-btn").addEventListener("click", insertEmail);
+document.querySelector("#ul-btn").addEventListener("click", () => listSelection("bullet"));
+document.querySelector("#ol-btn").addEventListener("click", () => listSelection("1"));
+document.querySelector("#alpha-list-btn").addEventListener("click", () => listSelection("a"));
+document.querySelector("#roman-list-btn").addEventListener("click", () => listSelection("i"));
 document.querySelector("#mode-md").addEventListener("click", () => setMode("markdown"));
 document.querySelector("#mode-bb").addEventListener("click", () => setMode("bbcode"));
 
@@ -221,6 +272,8 @@ document.querySelector("#save-draft").addEventListener("click", () => saveDraft(
 document.querySelector("#new-draft").addEventListener("click", () => {
   activeDraftId = null;
   editor.value = "";
+  mode = "bbcode";
+  syncModeUi();
   render();
   editor.focus();
 });
@@ -236,6 +289,7 @@ document.addEventListener("keydown", event => {
   }
 });
 
-editor.value = "# Exempel\n\n**Fet**, *kursiv*, ++understruken++ och ==markerad== text.\n\n- punkt ett\n- punkt två";
+editor.value = "[b]Exempel[/b]\n\n[b]Fet[/b], [i]kursiv[/i], [u]understruken[/u] och [highlight]markerad[/highlight] text.\n\n[list]\n[*]punkt ett\n[*]punkt två\n[/list]";
+syncModeUi();
 render();
 refreshDrafts().catch(console.error);
