@@ -55,10 +55,13 @@ export function renderBBCode(bbcode) {
     .replace(/\[right\]([\s\S]*?)\[\/right\]/gi, '<div class="fb-align-right">$1</div>')
     .replace(/\[indent\]([\s\S]*?)\[\/indent\]/gi, '<div class="fb-indent">$1</div>');
 
+  // At this point the entire document has already been escaped once. The
+  // captured URL/address strings are therefore safe to place into attributes
+  // as-is. Escaping them again would turn '&amp;' into '&amp;amp;'.
   html = html
-    .replace(/\[url=([^\]]+)\]([\s\S]*?)\[\/url\]/gi, (_m, url, label) => `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${label}</a>`)
-    .replace(/\[url\]([\s\S]*?)\[\/url\]/gi, (_m, url) => `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${url}</a>`)
-    .replace(/\[email\]([\s\S]*?)\[\/email\]/gi, (_m, address) => `<a href="mailto:${escapeHtml(address)}">${address}</a>`);
+    .replace(/\[url=([^\]]+)\]([\s\S]*?)\[\/url\]/gi, (_m, url, label) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>`)
+    .replace(/\[url\]([\s\S]*?)\[\/url\]/gi, (_m, url) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`)
+    .replace(/\[email\]([\s\S]*?)\[\/email\]/gi, (_m, address) => `<a href="mailto:${address}">${address}</a>`);
 
   html = html.replace(/\[quote=([^\]]+)\]([\s\S]*?)\[\/quote\]/gi, (_m, attr, body) => renderQuote(attr, body));
   html = html.replace(/\[quote\]([\s\S]*?)\[\/quote\]/gi, (_m, body) => renderQuote("", body));
