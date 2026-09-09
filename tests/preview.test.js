@@ -44,3 +44,10 @@ test("unsupported candidate tags remain literal", () => {
   assert.match(html, /\[sub\]x\[\/sub\]/);
   assert.match(html, /\[hr\]/);
 });
+
+test("urls and quote attribution are not double-escaped", () => {
+  const html = renderBBCode("[url=https://example.com/?a=1&b=2]x[/url][quote=Tom & Jerry]Q[/quote]");
+  assert.match(html, /href=\"https:\/\/example\.com\/\?a=1&amp;b=2\"/);
+  assert.match(html, /Tom &amp; Jerry/);
+  assert.doesNotMatch(html, /amp;amp/);
+});
