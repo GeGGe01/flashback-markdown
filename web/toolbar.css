@@ -1,7 +1,17 @@
 .toolbar {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.toolbar-track {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
   flex-wrap: wrap;
   align-items: center;
   row-gap: 2px;
+  gap: 3px;
 }
 
 .tool-separator {
@@ -21,15 +31,19 @@
 .tool[aria-label="Centrera"] { text-align: center; }
 .tool[aria-label="Högerjustera"] { text-align: right; transform: scaleX(-1); }
 
-.smiley-more {
+.smiley-more,
+.format-more {
   position: relative;
+  flex: 0 0 auto;
 }
 
-.smiley-more > summary {
+.smiley-more > summary,
+.format-more > summary {
   list-style: none;
 }
 
-.smiley-more > summary::-webkit-details-marker {
+.smiley-more > summary::-webkit-details-marker,
+.format-more > summary::-webkit-details-marker {
   display: none;
 }
 
@@ -68,7 +82,7 @@ button.bbcode-only:disabled,
 }
 
 @media (min-width: 701px) {
-  .toolbar {
+  .toolbar-track {
     flex-wrap: nowrap;
   }
 }
@@ -78,11 +92,9 @@ button.bbcode-only:disabled,
     display: none;
   }
 
-  /* Flashback's mobile toolbar behaves like one horizontal tool strip.
-     Keep the strip inside the editor instead of letting its intrinsic width
-     stretch the page; extra tools remain reachable by horizontal swipe. */
-  .toolbar {
-    width: auto;
+  /* Only the button track scrolls. Popovers remain siblings of the scroll
+     container so they can open vertically without being clipped. */
+  .toolbar-track {
     flex-wrap: nowrap;
     align-items: center;
     overflow-x: auto;
@@ -92,17 +104,12 @@ button.bbcode-only:disabled,
     scrollbar-width: none;
   }
 
-  .toolbar::-webkit-scrollbar {
+  .toolbar-track::-webkit-scrollbar {
     display: none;
   }
 
-  .tool {
+  .toolbar-track .tool {
     flex: 0 0 40px;
     min-width: 40px;
-  }
-
-  .smiley-more,
-  .format-more {
-    flex: 0 0 auto;
   }
 }
