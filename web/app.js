@@ -207,7 +207,10 @@ function insertSmiley(value) {
 }
 
 function clearEditor() {
+  clearTimeout(autosaveTimer);
+  autosaveTimer = null;
   editor.value = "";
+  editor.setSelectionRange(0, 0);
   render();
   editor.focus();
 }
@@ -321,7 +324,10 @@ document.querySelector("#new-draft").addEventListener("click", () => {
 });
 draftsSelect.addEventListener("change", () => draftsSelect.value && loadDraft(draftsSelect.value));
 document.querySelector("#copy").addEventListener("click", async () => navigator.clipboard.writeText(editor.value));
-document.querySelector("#clear").addEventListener("click", clearEditor);
+document.querySelector("#clear").addEventListener("click", event => {
+  event.preventDefault();
+  clearEditor();
+});
 
 document.addEventListener("keydown", event => {
   if (!(event.ctrlKey || event.metaKey)) return;
