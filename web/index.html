@@ -6,12 +6,24 @@
   <meta name="color-scheme" content="light">
   <title>Flashbackaren editor</title>
   <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./toolbar.css">
 </head>
 <body>
   <main class="page-shell">
     <nav class="breadcrumbs" aria-label="Brödsmulor">
       <a href="#">Om Flashbackaren</a><span>/</span><a href="#">Verktyg</a><span>/</span><a href="#">Editor</a>
     </nav>
+
+    <section class="fb-box preview-panel live-preview-panel">
+      <header class="fb-box-title">Förhandsgranskning <span class="live-preview-label">Live</span></header>
+      <div class="preview-controls">
+        <button id="preview-desktop" class="active">◉ Dator</button>
+        <button id="preview-mobile">▯ Mobil</button>
+      </div>
+      <div class="preview-stage desktop" id="preview-stage">
+        <article id="preview" class="flashback-post"></article>
+      </div>
+    </section>
 
     <section class="fb-box editor-panel">
       <header class="fb-box-title">Skriv inlägg</header>
@@ -21,23 +33,48 @@
           <button data-wrap="b" class="tool tool-letter" title="Fet" aria-label="Fet"><strong>B</strong></button>
           <button data-wrap="i" class="tool tool-letter" title="Kursiv" aria-label="Kursiv"><em>I</em></button>
           <button data-wrap="u" class="tool tool-letter" title="Understruken" aria-label="Understruken"><u>U</u></button>
+
+          <span class="tool-separator" aria-hidden="true"></span>
+          <button data-block="left" class="tool tool-icon bbcode-only" title="Vänsterjustera" aria-label="Vänsterjustera">≡</button>
+          <button data-block="center" class="tool tool-icon bbcode-only" title="Centrera" aria-label="Centrera">≣</button>
+          <button data-block="right" class="tool tool-icon bbcode-only" title="Högerjustera" aria-label="Högerjustera">≡</button>
+
+          <span class="tool-separator" aria-hidden="true"></span>
+          <button id="ol-btn" class="tool tool-icon" title="Numrerad lista" aria-label="Numrerad lista">1≡</button>
+          <button id="ul-btn" class="tool tool-icon" title="Punktlista" aria-label="Punktlista">•≡</button>
+          <button data-block="indent" class="tool tool-icon bbcode-only" title="Indent" aria-label="Indent">↪</button>
+
+          <span class="tool-separator" aria-hidden="true"></span>
           <button id="link-btn" class="tool tool-icon" title="Länk" aria-label="Länk">🔗</button>
           <button data-block="quote" class="tool tool-icon" title="Citat" aria-label="Citat">●</button>
-          <button data-block="spoiler" class="tool tool-icon tool-spoiler" title="Spoiler" aria-label="Spoiler">•••</button>
+          <button data-block="spoiler" class="tool tool-icon bbcode-only" title="Spoiler" aria-label="Spoiler">•••</button>
+          <button data-block="code" class="tool tool-code" title="Kod" aria-label="Kod">&lt;/&gt;</button>
+
+          <details class="smiley-more bbcode-only">
+            <summary class="tool tool-more" title="Smilies" aria-label="Smilies">☺</summary>
+            <div class="smiley-popover" aria-label="Smilies">
+              <button data-smiley=":)">:)</button>
+              <button data-smiley=":(">:(</button>
+              <button data-smiley=";)">;)</button>
+              <button data-smiley=":p">:p</button>
+              <button data-smiley=":d">:d</button>
+              <button data-smiley=":o">:o</button>
+            </div>
+          </details>
 
           <details class="format-more">
-            <summary class="tool tool-more" title="Fler formateringsverktyg" aria-label="Fler formateringsverktyg">☺</summary>
+            <summary class="tool tool-more" title="Fler formateringsverktyg" aria-label="Fler formateringsverktyg">⋯</summary>
             <div class="format-popover">
-              <button data-wrap="highlight" title="Markera">H</button>
-              <button id="ul-btn" title="Punktlista">• Lista</button>
-              <button id="ol-btn" title="Numrerad lista">1. Lista</button>
-              <button data-block="code" title="Kod">Code</button>
-              <button data-block="noparse" title="Literal BBCode">NoParse</button>
+              <button data-wrap="highlight" class="bbcode-only" title="Highlight">Highlight</button>
+              <button id="alpha-list-btn" class="bbcode-only" title="Bokstavslista">a. Lista</button>
+              <button id="roman-list-btn" class="bbcode-only" title="Romersk lista">i. Lista</button>
+              <button data-block="noparse" class="bbcode-only" title="Visa BBCode bokstavligt">NoParse</button>
+              <button id="email-btn" class="bbcode-only" title="E-post">E-post</button>
             </div>
           </details>
         </div>
 
-        <textarea id="editor" spellcheck="true" placeholder="Skriv här..."></textarea>
+        <textarea id="editor" spellcheck="true" placeholder="Skriv BBCode här..."></textarea>
         <div class="counter-row"><span id="char-count" class="char-count">0 tecken</span></div>
 
         <div class="actions editor-actions">
@@ -53,9 +90,10 @@
         <div class="option-group">
           <h2>Editorläge</h2>
           <div class="segmented" role="group" aria-label="Format">
-            <button id="mode-md" class="active">Markdown</button>
-            <button id="mode-bb">BBCode</button>
+            <button id="mode-bb" class="active">BBCode</button>
+            <button id="mode-md">Markdown</button>
           </div>
+          <p class="option-help">BBCode är standardläget. Markdown är ett semantiskt import/export-läge, inte WYSIWYG.</p>
         </div>
 
         <div class="option-group">
@@ -74,17 +112,6 @@
           </div>
           <p class="option-help">Utkast autosparas lokalt i den här webbläsaren.</p>
         </div>
-      </div>
-    </section>
-
-    <section class="fb-box preview-panel">
-      <header class="fb-box-title">Förhandsgranskning</header>
-      <div class="preview-controls">
-        <button id="preview-desktop" class="active">◉ Dator</button>
-        <button id="preview-mobile">▯ Mobil</button>
-      </div>
-      <div class="preview-stage desktop" id="preview-stage">
-        <article id="preview" class="flashback-post"></article>
       </div>
     </section>
 
