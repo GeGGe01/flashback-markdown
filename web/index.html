@@ -3,69 +3,93 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
   <title>Flashbackaren editor</title>
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
   <main class="page-shell">
-    <nav class="breadcrumbs">Om Flashbackaren / Verktyg / Editor</nav>
+    <nav class="breadcrumbs" aria-label="Brödsmulor">
+      <a href="#">Om Flashbackaren</a><span>/</span><a href="#">Verktyg</a><span>/</span><a href="#">Editor</a>
+    </nav>
 
-    <section class="panel editor-panel">
-      <header class="panel-title">Skriv inlägg</header>
+    <section class="fb-box editor-panel">
+      <header class="fb-box-title">Skriv inlägg</header>
 
-      <div class="toolbar" aria-label="Formattering">
-        <button data-wrap="b" title="Fet"><strong>B</strong></button>
-        <button data-wrap="i" title="Kursiv"><em>I</em></button>
-        <button data-wrap="u" title="Understruken"><u>U</u></button>
-        <button data-wrap="highlight" title="Markera">H</button>
-        <button id="link-btn" title="Länk">🔗</button>
-        <button data-block="quote" title="Citat">💬</button>
-        <button data-block="spoiler" title="Spoiler">•••</button>
-        <button id="ul-btn" title="Punktlista">• List</button>
-        <button id="ol-btn" title="Numrerad lista">1. List</button>
-        <button data-block="code" title="Kod">Code</button>
-        <button data-block="noparse" title="Literal BBCode">NoParse</button>
-      </div>
+      <div class="editor-body">
+        <div class="toolbar" aria-label="Formattering">
+          <button data-wrap="b" class="tool tool-letter" title="Fet" aria-label="Fet"><strong>B</strong></button>
+          <button data-wrap="i" class="tool tool-letter" title="Kursiv" aria-label="Kursiv"><em>I</em></button>
+          <button data-wrap="u" class="tool tool-letter" title="Understruken" aria-label="Understruken"><u>U</u></button>
+          <button id="link-btn" class="tool tool-icon" title="Länk" aria-label="Länk">🔗</button>
+          <button data-block="quote" class="tool tool-icon" title="Citat" aria-label="Citat">●</button>
+          <button data-block="spoiler" class="tool tool-icon tool-spoiler" title="Spoiler" aria-label="Spoiler">•••</button>
 
-      <div class="editor-meta">
-        <div class="segmented" role="group" aria-label="Format">
-          <button id="mode-md" class="active">Markdown</button>
-          <button id="mode-bb">BBCode</button>
+          <details class="format-more">
+            <summary class="tool tool-more" title="Fler formateringsverktyg" aria-label="Fler formateringsverktyg">☺</summary>
+            <div class="format-popover">
+              <button data-wrap="highlight" title="Markera">H</button>
+              <button id="ul-btn" title="Punktlista">• Lista</button>
+              <button id="ol-btn" title="Numrerad lista">1. Lista</button>
+              <button data-block="code" title="Kod">Code</button>
+              <button data-block="noparse" title="Literal BBCode">NoParse</button>
+            </div>
+          </details>
         </div>
 
-        <div class="segmented" role="group" aria-label="Typ">
-          <button id="profile-forum" class="active">Forum</button>
-          <button id="profile-pm">PM</button>
+        <textarea id="editor" spellcheck="true" placeholder="Skriv här..."></textarea>
+        <div class="counter-row"><span id="char-count" class="char-count">0 tecken</span></div>
+
+        <div class="actions editor-actions">
+          <button id="save-draft" class="primary">✓ Spara utkast</button>
+          <button id="copy" class="secondary">Kopiera</button>
         </div>
-
-        <span id="char-count" class="char-count">0 tecken</span>
-      </div>
-
-      <textarea id="editor" spellcheck="true" placeholder="Skriv här..."></textarea>
-
-      <div class="actions">
-        <button id="save-draft" class="primary">Spara utkast</button>
-        <button id="new-draft">Nytt utkast</button>
-        <select id="drafts" aria-label="Sparade utkast"><option value="">Utkast…</option></select>
-        <button id="copy">Kopiera</button>
       </div>
     </section>
 
-    <section class="panel preview-panel">
-      <header class="panel-title preview-title">
-        <span>Förhandsgranskning</span>
-        <div class="segmented">
-          <button id="preview-desktop" class="active">Dator</button>
-          <button id="preview-mobile">Mobil</button>
+    <section class="fb-box options-panel">
+      <header class="fb-box-title">Tilläggsalternativ</header>
+      <div class="options-body">
+        <div class="option-group">
+          <h2>Editorläge</h2>
+          <div class="segmented" role="group" aria-label="Format">
+            <button id="mode-md" class="active">Markdown</button>
+            <button id="mode-bb">BBCode</button>
+          </div>
         </div>
-      </header>
+
+        <div class="option-group">
+          <h2>Texttyp</h2>
+          <div class="segmented" role="group" aria-label="Typ">
+            <button id="profile-forum" class="active">Forum</button>
+            <button id="profile-pm">PM · 15 000</button>
+          </div>
+        </div>
+
+        <div class="option-group">
+          <h2>Utkast</h2>
+          <div class="draft-row">
+            <select id="drafts" aria-label="Sparade utkast"><option value="">Utkast…</option></select>
+            <button id="new-draft">Nytt utkast</button>
+          </div>
+          <p class="option-help">Utkast autosparas lokalt i den här webbläsaren.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="fb-box preview-panel">
+      <header class="fb-box-title">Förhandsgranskning</header>
+      <div class="preview-controls">
+        <button id="preview-desktop" class="active">◉ Dator</button>
+        <button id="preview-mobile">▯ Mobil</button>
+      </div>
       <div class="preview-stage desktop" id="preview-stage">
         <article id="preview" class="flashback-post"></article>
       </div>
     </section>
 
-    <section class="panel warnings-panel">
-      <header class="panel-title">Warnings <span id="warning-count">0</span></header>
+    <section class="fb-box warnings-panel">
+      <header class="fb-box-title compact-title">Warnings <span id="warning-count">0</span></header>
       <ul id="warnings"></ul>
     </section>
   </main>
