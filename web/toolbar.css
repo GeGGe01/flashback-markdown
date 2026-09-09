@@ -1,0 +1,88 @@
+.toolbar {
+  flex-wrap: wrap;
+  align-items: center;
+  row-gap: 2px;
+}
+
+.tool-separator {
+  display: inline-block;
+  width: 1px;
+  height: 30px;
+  margin: 0 4px;
+  background: #dddddd;
+  flex: 0 0 auto;
+}
+
+.tool-code {
+  font: 700 18px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.tool[aria-label="Vänsterjustera"] { text-align: left; }
+.tool[aria-label="Centrera"] { text-align: center; }
+.tool[aria-label="Högerjustera"] { text-align: right; transform: scaleX(-1); }
+
+.smiley-more {
+  position: relative;
+}
+
+.smiley-more > summary {
+  list-style: none;
+}
+
+.smiley-more > summary::-webkit-details-marker {
+  display: none;
+}
+
+.smiley-popover {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  z-index: 14;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  min-width: 180px;
+  padding: 9px;
+  border: 1px solid #cfcfcf;
+  border-radius: 3px;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(0,0,0,.18);
+}
+
+.smiley-popover button {
+  min-height: 40px;
+  border: 1px solid #d2d2d2;
+  border-radius: 3px;
+  background: linear-gradient(#ffffff, #eeeeee);
+  font: 16px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+button.bbcode-only:disabled,
+.bbcode-only.mode-disabled {
+  opacity: .32;
+  cursor: not-allowed;
+}
+
+.bbcode-only.mode-disabled {
+  pointer-events: none;
+}
+
+@media (min-width: 701px) {
+  .toolbar {
+    flex-wrap: nowrap;
+  }
+}
+
+@media (max-width: 700px) {
+  .tool-separator {
+    display: none;
+  }
+
+  .toolbar {
+    align-items: center;
+  }
+
+  .tool {
+    flex: 0 0 auto;
+  }
+}
