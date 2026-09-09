@@ -3,6 +3,8 @@ name: pages
 on:
   push:
     branches: ["main"]
+  pull_request:
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -11,7 +13,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -25,6 +27,7 @@ jobs:
       - run: npm test
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: test
     environment:
       name: github-pages
@@ -39,7 +42,9 @@ jobs:
           cp web/app.js _site/app.js
           cp web/style.css _site/style.css
           cp src/converter.js _site/src/converter.js
-          sed -i 's#../src/converter.js#./src/converter.js#' _site/app.js
+          cp src/reverse-converter.js _site/src/reverse-converter.js
+          cp src/preview.js _site/src/preview.js
+          sed -i 's#../src/#./src/#g' _site/app.js
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
