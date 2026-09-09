@@ -3,39 +3,69 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Markdown → Flashback BBCode</title>
+  <title>Flashbackaren editor</title>
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <main>
-    <header>
-      <h1>Markdown → Flashback BBCode</h1>
-      <p>Konverteringen sker lokalt i webbläsaren.</p>
-    </header>
+  <main class="page-shell">
+    <nav class="breadcrumbs">Om Flashbackaren / Verktyg / Editor</nav>
 
-    <section class="grid">
-      <article>
-        <div class="bar">
-          <strong>Markdown</strong>
-          <button id="clear">Rensa</button>
-        </div>
-        <textarea id="input" spellcheck="false" placeholder="# Rubrik&#10;&#10;**fet text**"></textarea>
-      </article>
+    <section class="panel editor-panel">
+      <header class="panel-title">Skriv inlägg</header>
 
-      <article>
-        <div class="bar">
-          <strong>Flashback BBCode</strong>
-          <button id="copy">Kopiera</button>
+      <div class="toolbar" aria-label="Formattering">
+        <button data-wrap="b" title="Fet"><strong>B</strong></button>
+        <button data-wrap="i" title="Kursiv"><em>I</em></button>
+        <button data-wrap="u" title="Understruken"><u>U</u></button>
+        <button data-wrap="highlight" title="Markera">H</button>
+        <button id="link-btn" title="Länk">🔗</button>
+        <button data-block="quote" title="Citat">💬</button>
+        <button data-block="spoiler" title="Spoiler">•••</button>
+        <button id="ul-btn" title="Punktlista">• List</button>
+        <button id="ol-btn" title="Numrerad lista">1. List</button>
+        <button data-block="code" title="Kod">Code</button>
+        <button data-block="noparse" title="Literal BBCode">NoParse</button>
+      </div>
+
+      <div class="editor-meta">
+        <div class="segmented" role="group" aria-label="Format">
+          <button id="mode-md" class="active">Markdown</button>
+          <button id="mode-bb">BBCode</button>
         </div>
-        <textarea id="output" spellcheck="false" readonly></textarea>
-      </article>
+
+        <div class="segmented" role="group" aria-label="Typ">
+          <button id="profile-forum" class="active">Forum</button>
+          <button id="profile-pm">PM</button>
+        </div>
+
+        <span id="char-count" class="char-count">0 tecken</span>
+      </div>
+
+      <textarea id="editor" spellcheck="true" placeholder="Skriv här..."></textarea>
+
+      <div class="actions">
+        <button id="save-draft" class="primary">Spara utkast</button>
+        <button id="new-draft">Nytt utkast</button>
+        <select id="drafts" aria-label="Sparade utkast"><option value="">Utkast…</option></select>
+        <button id="copy">Kopiera</button>
+      </div>
     </section>
 
-    <section>
-      <div class="bar">
-        <strong>Warnings</strong>
-        <span id="warning-count">0</span>
+    <section class="panel preview-panel">
+      <header class="panel-title preview-title">
+        <span>Förhandsgranskning</span>
+        <div class="segmented">
+          <button id="preview-desktop" class="active">Dator</button>
+          <button id="preview-mobile">Mobil</button>
+        </div>
+      </header>
+      <div class="preview-stage desktop" id="preview-stage">
+        <article id="preview" class="flashback-post"></article>
       </div>
+    </section>
+
+    <section class="panel warnings-panel">
+      <header class="panel-title">Warnings <span id="warning-count">0</span></header>
       <ul id="warnings"></ul>
     </section>
   </main>

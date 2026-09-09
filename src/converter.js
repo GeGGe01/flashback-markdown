@@ -11,6 +11,8 @@ const RE = {
   link: /\[([^\]]+)\]\(([^)\s]+)(?:\s+['"][^'"]*['"])?\)/g,
   inlineCode: /`([^`\n]+)`/g,
   strike: /~~(.+?)~~/g,
+  underline: /\+\+(.+?)\+\+/g,
+  highlight: /==(.+?)==/g,
   bold: /\*\*(.+?)\*\*|__(.+?)__/g,
   italicStar: /(?<!\*)\*([^*\n]+?)\*(?!\*)/g,
   italicUnder: /(?<!\w)_([^_\n]+?)_(?!\w)/g,
@@ -56,6 +58,8 @@ export class FlashbackConverter {
       return value;
     });
 
+    s = s.replace(RE.underline, "[u]$1[/u]");
+    s = s.replace(RE.highlight, "[highlight]$1[/highlight]");
     s = s.replace(RE.bold, (_m, a, b) => `[b]${a ?? b}[/b]`);
     s = s.replace(RE.italicStar, "[i]$1[/i]");
     s = s.replace(RE.italicUnder, "[i]$1[/i]");
@@ -91,10 +95,7 @@ export class FlashbackConverter {
   table(rows, startLine) {
     let parsed = rows.map(raw => raw.trim().replace(/^\||\|$/g, "").split("|").map(c => c.trim()));
 
-    if (
-      parsed.length >= 2 &&
-      parsed[1].every(c => /^:?-{3,}:?$/.test(c))
-    ) {
+    if (parsed.length >= 2 && parsed[1].every(c => /^:?-{3,}:?$/.test(c))) {
       parsed.splice(1, 1);
     }
 
@@ -126,11 +127,8 @@ export class FlashbackConverter {
           block.push(lines[i]);
           i++;
         }
-        if (i >= lines.length) {
-          this.warn(lineNo, "unclosed-fence", "Unclosed code fence; converted to end of input.");
-        } else {
-          i++;
-        }
+        if (i >= lines.length) this.warn(lineNo, "unclosed-fence", "Unclosed code fence; converted to end of input.");
+        else i++;
         out.push(this.fence(block, lineNo, lang));
         continue;
       }
@@ -238,10 +236,7 @@ export class FlashbackConverter {
       }
     }
 
-    return {
-      output: cleaned.join("\n").trim() + "\n",
-      warnings: this.warnings,
-    };
+    return { output: cleaned.join("\n").trim() + "\n", warnings: this.warnings };
   }
 }
 
