@@ -209,6 +209,8 @@ function insertSmiley(value) {
 function clearEditor() {
   clearTimeout(autosaveTimer);
   autosaveTimer = null;
+  activeDraftId = null;
+  draftsSelect.value = "";
   editor.value = "";
   editor.setSelectionRange(0, 0);
   render();
