@@ -82,9 +82,7 @@ button.bbcode-only:disabled,
      Keep the strip inside the editor instead of letting its intrinsic width
      stretch the page; extra tools remain reachable by horizontal swipe. */
   .toolbar {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
+    width: auto;
     flex-wrap: nowrap;
     align-items: center;
     overflow-x: auto;
