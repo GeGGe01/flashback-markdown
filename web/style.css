@@ -186,10 +186,8 @@ button, summary { cursor: pointer; }
 }
 .option-help { margin: 7px 0 0; color: #666; font-size: 13px; }
 
-.segmented { display: inline-flex; flex-wrap: wrap; }
-.segmented button { border-radius: 0; }
-.segmented button:first-child { border-radius: 3px 0 0 3px; }
-.segmented button:last-child { margin-left: -1px; border-radius: 0 3px 3px 0; }
+.segmented { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.segmented button { border-radius: 3px; margin-left: 0; }
 .segmented button.active,
 .preview-controls button.active {
   background: #dedede;
