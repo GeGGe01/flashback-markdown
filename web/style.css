@@ -1,0 +1,30 @@
+:root {
+  color-scheme: dark light;
+  font-family: system-ui, sans-serif;
+}
+body { margin: 0; }
+main { max-width: 1200px; margin: auto; padding: 1rem; }
+header { margin-bottom: 1rem; }
+.grid { display: grid; gap: 1rem; grid-template-columns: 1fr 1fr; }
+article, section { min-width: 0; }
+textarea {
+  width: 100%;
+  min-height: 60vh;
+  box-sizing: border-box;
+  resize: vertical;
+  padding: .8rem;
+  font: 14px/1.45 ui-monospace, monospace;
+}
+.bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: .4rem;
+}
+button { padding: .45rem .75rem; }
+#warnings { font-family: ui-monospace, monospace; padding-left: 1.3rem; }
+@media (max-width: 800px) {
+  .grid { grid-template-columns: 1fr; }
+  textarea { min-height: 36vh; }
+}
