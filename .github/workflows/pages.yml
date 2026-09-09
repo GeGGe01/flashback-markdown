@@ -41,10 +41,14 @@ jobs:
           cp web/index.html _site/index.html
           cp web/app.js _site/app.js
           cp web/style.css _site/style.css
+          cp web/toolbar.css _site/toolbar.css
           cp src/converter.js _site/src/converter.js
           cp src/reverse-converter.js _site/src/reverse-converter.js
           cp src/preview.js _site/src/preview.js
           sed -i 's#../src/#./src/#g' _site/app.js
+          sed -i "s#./app.js#./app.js?v=${GITHUB_SHA}#" _site/index.html
+          sed -i "s#./style.css#./style.css?v=${GITHUB_SHA}#" _site/index.html
+          sed -i "s#./toolbar.css#./toolbar.css?v=${GITHUB_SHA}#" _site/index.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
