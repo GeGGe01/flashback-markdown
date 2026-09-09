@@ -26,7 +26,7 @@
     </section>
 
     <section class="fb-box editor-panel">
-      <header class="fb-box-title">Skriv inlägg</header>
+      <header id="editor-title" class="fb-box-title">Skriv inlägg</header>
 
       <div class="editor-body">
         <div class="toolbar" aria-label="Formattering">
@@ -82,6 +82,7 @@
         <div class="actions editor-actions">
           <button id="save-draft" class="primary">✓ Spara utkast</button>
           <button id="copy" class="secondary">Kopiera</button>
+          <button id="clear" class="secondary">Rensa</button>
         </div>
       </div>
     </section>
@@ -103,7 +104,9 @@
           <div class="segmented" role="group" aria-label="Typ">
             <button id="profile-forum" class="active">Forum</button>
             <button id="profile-pm">PM · 15 000</button>
+            <button id="profile-signature">Signatur · 4 rader</button>
           </div>
+          <p class="option-help">Signatur räknar källrader, inte visuella rader. Blocktaggar som [center] och [right] kan därför ge fler renderade rader utan att öka källradantalet.</p>
         </div>
 
         <div class="option-group">
