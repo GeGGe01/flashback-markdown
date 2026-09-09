@@ -78,11 +78,31 @@ button.bbcode-only:disabled,
     display: none;
   }
 
+  /* Flashback's mobile toolbar behaves like one horizontal tool strip.
+     Keep the strip inside the editor instead of letting its intrinsic width
+     stretch the page; extra tools remain reachable by horizontal swipe. */
   .toolbar {
+    width: auto;
+    flex-wrap: nowrap;
     align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .toolbar::-webkit-scrollbar {
+    display: none;
   }
 
   .tool {
+    flex: 0 0 40px;
+    min-width: 40px;
+  }
+
+  .smiley-more,
+  .format-more {
     flex: 0 0 auto;
   }
 }
