@@ -24,14 +24,20 @@ test("fenced code -> code", () => {
   assert.match(output, /\[code\]\nhello\n\[\/code\]/);
 });
 
-test("bbcode-like fenced content -> noparse", () => {
+test("bbcode-like fenced content stays inside code", () => {
   const r = convertMarkdown("```\n[b]literal[/b]\n```");
-  assert.match(r.output, /\[noparse\]/);
-  assert.ok(r.warnings.some(w => w.code === "code-used-noparse"));
+  assert.match(r.output, /\[code\]\n\[b\]literal\[\/b\]\n\[\/code\]/);
+  assert.ok(!r.warnings.some(w => w.code === "code-used-noparse"));
 });
 
 test("markdown table -> tabbed code block", () => {
   const { output } = convertMarkdown("| A | B |\n| --- | --- |\n| 1 | 2 |");
   assert.match(output, /A\tB/);
   assert.match(output, /1\t2/);
+});
+
+test("unsupported horizontal rule is omitted with warning", () => {
+  const r = convertMarkdown("före\n\n---\n\nefter");
+  assert.doesNotMatch(r.output, /\[hr\]/i);
+  assert.ok(r.warnings.some(w => w.code === "horizontal-rule-dropped"));
 });
