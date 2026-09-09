@@ -24,8 +24,7 @@ function currentBBCode() {
 }
 
 function sourceLineCount(value) {
-  if (!value) return 0;
-  return value.replace(/\r\n/g, "\n").split("\n").length;
+  return (value ?? "").replace(/\r\n/g, "\n").split("\n").length;
 }
 
 function render() {
