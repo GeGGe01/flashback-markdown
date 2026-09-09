@@ -1,0 +1,13 @@
+{
+  "name": "flashback-markdown",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "convert": "node bin/cli.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
