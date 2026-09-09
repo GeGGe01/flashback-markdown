@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Markdown → Flashback BBCode</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Markdown → Flashback BBCode</h1>
+      <p>Konverteringen sker lokalt i webbläsaren.</p>
+    </header>
+
+    <section class="grid">
+      <article>
+        <div class="bar">
+          <strong>Markdown</strong>
+          <button id="clear">Rensa</button>
+        </div>
+        <textarea id="input" spellcheck="false" placeholder="# Rubrik&#10;&#10;**fet text**"></textarea>
+      </article>
+
+      <article>
+        <div class="bar">
+          <strong>Flashback BBCode</strong>
+          <button id="copy">Kopiera</button>
+        </div>
+        <textarea id="output" spellcheck="false" readonly></textarea>
+      </article>
+    </section>
+
+    <section>
+      <div class="bar">
+        <strong>Warnings</strong>
+        <span id="warning-count">0</span>
+      </div>
+      <ul id="warnings"></ul>
+    </section>
+  </main>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
