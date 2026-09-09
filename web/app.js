@@ -2,7 +2,11 @@ import { convertMarkdown } from "../src/converter.js";
 import { convertBBCode } from "../src/reverse-converter.js";
 import { renderBBCode } from "../src/preview.js";
 
+const SIGNATURE_MAX_LINES = 4;
+const PM_MAX_CHARS = 15000;
+
 const editor = document.querySelector("#editor");
+const editorTitle = document.querySelector("#editor-title");
 const preview = document.querySelector("#preview");
 const previewStage = document.querySelector("#preview-stage");
 const warningsEl = document.querySelector("#warnings");
@@ -19,21 +23,41 @@ function currentBBCode() {
   return mode === "bbcode" ? { output: editor.value, warnings: [] } : convertMarkdown(editor.value);
 }
 
+function sourceLineCount(value) {
+  return (value ?? "").replace(/\r\n/g, "\n").split("\n").length;
+}
+
 function render() {
   const result = currentBBCode();
+  const warnings = [...result.warnings];
+  const n = editor.value.length;
+  const lines = sourceLineCount(editor.value);
+
+  if (profile === "signature" && lines > SIGNATURE_MAX_LINES) {
+    warnings.push({
+      line: SIGNATURE_MAX_LINES + 1,
+      code: "signature-line-limit",
+      message: `Signaturkällan har ${lines} rader. Flashback-signaturer ska hållas till högst ${SIGNATURE_MAX_LINES} källrader.`,
+    });
+  }
+
   preview.innerHTML = renderBBCode(result.output);
+  preview.classList.toggle("signature-preview", profile === "signature");
+
   warningsEl.replaceChildren();
-  warningCount.textContent = String(result.warnings.length);
-  for (const w of result.warnings) {
+  warningCount.textContent = String(warnings.length);
+  for (const w of warnings) {
     const li = document.createElement("li");
     li.textContent = `Rad ${w.line}: ${w.message}`;
     warningsEl.appendChild(li);
   }
 
-  const n = editor.value.length;
   if (profile === "pm") {
     charCount.textContent = `${n.toLocaleString("sv-SE")} / 15 000 tecken`;
-    charCount.classList.toggle("over-limit", n > 15000);
+    charCount.classList.toggle("over-limit", n > PM_MAX_CHARS);
+  } else if (profile === "signature") {
+    charCount.textContent = `${n.toLocaleString("sv-SE")} tecken · ${lines} / ${SIGNATURE_MAX_LINES} källrader`;
+    charCount.classList.toggle("over-limit", lines > SIGNATURE_MAX_LINES);
   } else {
     charCount.textContent = `${n.toLocaleString("sv-SE")} tecken`;
     charCount.classList.remove("over-limit");
@@ -43,7 +67,12 @@ function render() {
 function syncModeUi() {
   document.querySelector("#mode-md").classList.toggle("active", mode === "markdown");
   document.querySelector("#mode-bb").classList.toggle("active", mode === "bbcode");
-  editor.placeholder = mode === "bbcode" ? "Skriv BBCode här..." : "Skriv Markdown här...";
+
+  if (profile === "signature") {
+    editor.placeholder = mode === "bbcode" ? "Skriv signatur i BBCode här..." : "Skriv signatur i Markdown här...";
+  } else {
+    editor.placeholder = mode === "bbcode" ? "Skriv BBCode här..." : "Skriv Markdown här...";
+  }
 
   for (const el of document.querySelectorAll(".bbcode-only")) {
     const disabled = mode !== "bbcode";
@@ -53,6 +82,24 @@ function syncModeUi() {
       el.classList.toggle("mode-disabled", disabled);
     }
   }
+}
+
+function syncProfileUi() {
+  document.querySelector("#profile-forum").classList.toggle("active", profile === "forum");
+  document.querySelector("#profile-pm").classList.toggle("active", profile === "pm");
+  document.querySelector("#profile-signature").classList.toggle("active", profile === "signature");
+
+  editor.classList.toggle("signature-mode", profile === "signature");
+  editorTitle.textContent = profile === "signature" ? "Redigera signatur" : profile === "pm" ? "Skriv PM" : "Skriv inlägg";
+  syncModeUi();
+}
+
+function setProfile(next) {
+  if (next === profile) return;
+  profile = next;
+  syncProfileUi();
+  render();
+  scheduleAutosave();
 }
 
 function setMode(next) {
@@ -159,6 +206,12 @@ function insertSmiley(value) {
   scheduleAutosave();
 }
 
+function clearEditor() {
+  editor.value = "";
+  render();
+  editor.focus();
+}
+
 function openDb() {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open("flashbackaren-editor", 1);
@@ -217,9 +270,7 @@ async function loadDraft(id) {
   editor.value = draft.content;
   mode = draft.mode || "bbcode";
   profile = draft.profile || "forum";
-  syncModeUi();
-  document.querySelector("#profile-forum").classList.toggle("active", profile === "forum");
-  document.querySelector("#profile-pm").classList.toggle("active", profile === "pm");
+  syncProfileUi();
   render();
 }
 
@@ -244,18 +295,9 @@ document.querySelector("#roman-list-btn").addEventListener("click", () => listSe
 document.querySelector("#mode-md").addEventListener("click", () => setMode("markdown"));
 document.querySelector("#mode-bb").addEventListener("click", () => setMode("bbcode"));
 
-document.querySelector("#profile-forum").addEventListener("click", () => {
-  profile = "forum";
-  document.querySelector("#profile-forum").classList.add("active");
-  document.querySelector("#profile-pm").classList.remove("active");
-  render();
-});
-document.querySelector("#profile-pm").addEventListener("click", () => {
-  profile = "pm";
-  document.querySelector("#profile-pm").classList.add("active");
-  document.querySelector("#profile-forum").classList.remove("active");
-  render();
-});
+document.querySelector("#profile-forum").addEventListener("click", () => setProfile("forum"));
+document.querySelector("#profile-pm").addEventListener("click", () => setProfile("pm"));
+document.querySelector("#profile-signature").addEventListener("click", () => setProfile("signature"));
 
 document.querySelector("#preview-desktop").addEventListener("click", () => {
   previewStage.className = "preview-stage desktop";
@@ -273,12 +315,13 @@ document.querySelector("#new-draft").addEventListener("click", () => {
   activeDraftId = null;
   editor.value = "";
   mode = "bbcode";
-  syncModeUi();
+  syncProfileUi();
   render();
   editor.focus();
 });
 draftsSelect.addEventListener("change", () => draftsSelect.value && loadDraft(draftsSelect.value));
 document.querySelector("#copy").addEventListener("click", async () => navigator.clipboard.writeText(editor.value));
+document.querySelector("#clear").addEventListener("click", clearEditor);
 
 document.addEventListener("keydown", event => {
   if (!(event.ctrlKey || event.metaKey)) return;
@@ -290,6 +333,6 @@ document.addEventListener("keydown", event => {
 });
 
 editor.value = "[b]Exempel[/b]\n\n[b]Fet[/b], [i]kursiv[/i], [u]understruken[/u] och [highlight]markerad[/highlight] text.\n\n[list]\n[*]punkt ett\n[*]punkt två\n[/list]";
-syncModeUi();
+syncProfileUi();
 render();
 refreshDrafts().catch(console.error);
