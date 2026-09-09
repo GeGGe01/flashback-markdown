@@ -14,7 +14,7 @@ function renderList(body, type) {
 }
 
 function renderQuote(attr, body) {
-  const header = attr ? `<div class="fb-quote-head">Ursprungligen postat av <strong>${escapeHtml(attr)}</strong></div>` : `<div class="fb-quote-label">Citat:</div>`;
+  const header = attr ? `<div class="fb-quote-head">Ursprungligen postat av <strong>${attr}</strong></div>` : `<div class="fb-quote-label">Citat:</div>`;
   return `${header}<blockquote class="fb-quote">${body}</blockquote>`;
 }
 
