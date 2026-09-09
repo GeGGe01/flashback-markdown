@@ -18,7 +18,6 @@ const RE = {
   italicUnder: /(?<!\w)_([^_\n]+?)_(?!\w)/g,
   htmlU: /<u>(.*?)<\/u>/gi,
   htmlBr: /<br\s*\/?>/gi,
-  bbcodeLike: /\[(?:\/?)(?:b|i|u|quote|url|code|noparse|list|spoiler|left|center|right|indent|highlight|email)(?:=[^\]]+)?\]/i,
 };
 
 function decodeEntities(s) {
@@ -42,7 +41,7 @@ export class FlashbackConverter {
       .replace(RE.htmlU, "[u]$1[/u]");
 
     s = s.replace(RE.image, (_m, alt, url) => {
-      this.warn(lineNo, "image-degraded", "Image converted to labeled URL; [img] is not emitted.");
+      this.warn(lineNo, "image-degraded", "Image converted to labeled URL; [img] is not supported by the verified Flashback renderer.");
       return `${alt ? `${alt}: ` : ""}[url=${url}]${url}[/url]`;
     });
 
@@ -54,7 +53,7 @@ export class FlashbackConverter {
     });
 
     s = s.replace(RE.strike, (_m, value) => {
-      this.warn(lineNo, "strikethrough-dropped", "Strikethrough preserved as plain text.");
+      this.warn(lineNo, "strikethrough-dropped", "Flashback rendering test shows [s]/[strike] as literal text; strikethrough preserved as plain text.");
       return value;
     });
 
@@ -75,14 +74,11 @@ export class FlashbackConverter {
   fence(content, startLine, lang) {
     const body = content.join("\n");
     if (lang) {
-      this.warn(startLine, "language-label-dropped", `Language label "${lang}" dropped.`);
+      this.warn(startLine, "language-label-dropped", `Language label "${lang}" dropped; the verified Flashback renderer supports plain [code], while [code=php] is rendered literally.`);
     }
 
-    if (RE.bbcodeLike.test(body)) {
-      this.warn(startLine, "code-used-noparse", "BBCode-like content detected; using [noparse].");
-      return `[noparse]\n${body}\n[/noparse]`;
-    }
-
+    // Empirical rendering test: formatting tags inside [code] remain literal.
+    // Therefore fenced Markdown code maps directly to [code], even if it contains BBCode-looking text.
     content.forEach((line, i) => {
       if (line.length > this.mobileWidth) {
         this.warn(startLine + i, "wide-code-line", `Code line exceeds ~${this.mobileWidth} columns.`);
@@ -159,6 +155,7 @@ export class FlashbackConverter {
       }
 
       if (RE.hr.test(raw)) {
+        this.warn(lineNo, "horizontal-rule-dropped", "Flashback rendering test shows [hr] as literal text; Markdown horizontal rule omitted.");
         out.push("");
         i++;
         continue;
