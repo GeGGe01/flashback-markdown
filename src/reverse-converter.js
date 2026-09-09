@@ -2,7 +2,7 @@ const SIMPLE_TAGS = [
   ["b", "**", "**"],
   ["i", "*", "*"],
   ["u", "++", "++"],
-  ["highlight", "==", "=="],
+  ["highlight", "**", "**"],
 ];
 
 function replaceSimpleTags(input) {
@@ -12,6 +12,10 @@ function replaceSimpleTags(input) {
     out = out.replace(re, (_m, body) => `${open}${body}${close}`);
   }
   return out;
+}
+
+function asBlockquote(body) {
+  return body.trim().split("\n").map(line => `> ${line}`).join("\n");
 }
 
 function convertLists(input) {
@@ -39,17 +43,17 @@ export function convertBBCode(bbcode) {
 
   out = out.replace(/\[url=([^\]]+)\]([\s\S]*?)\[\/url\]/gi, (_m, url, label) => `[${label}](${url})`);
   out = out.replace(/\[url\]([\s\S]*?)\[\/url\]/gi, (_m, url) => `<${url}>`);
-  out = out.replace(/\[quote(?:=[^\]]+)?\]([\s\S]*?)\[\/quote\]/gi, (_m, body) =>
-    body.trim().split("\n").map(line => `> ${line}`).join("\n")
-  );
-  out = convertLists(out);
-  out = out.replace(/\[spoiler(?:=([^\]]+))?\]([\s\S]*?)\[\/spoiler\]/gi, (_m, title, body) =>
-    `:::spoiler${title ? ` ${title}` : ""}\n${body.trim()}\n:::`
-  );
 
+  // Flashback quote-like presentation maps to Markdown's native blockquote.
+  // Attribution/title metadata is intentionally discarded in the Markdown projection.
+  out = out.replace(/\[quote(?:=[^\]]+)?\]([\s\S]*?)\[\/quote\]/gi, (_m, body) => asBlockquote(body));
+  out = out.replace(/\[indent\]([\s\S]*?)\[\/indent\]/gi, (_m, body) => asBlockquote(body));
+  out = out.replace(/\[spoiler(?:=[^\]]+)?\]([\s\S]*?)\[\/spoiler\]/gi, (_m, body) => asBlockquote(body));
+
+  out = convertLists(out);
   out = replaceSimpleTags(out);
 
-  const lossyTags = ["left", "center", "right", "indent", "email"];
+  const lossyTags = ["left", "center", "right", "email"];
   for (const tag of lossyTags) {
     const re = new RegExp(`\\[${tag}(?:=[^\\]]+)?\\]([\\s\\S]*?)\\[\\/${tag}\\]`, "gi");
     out = out.replace(re, (_m, body) => {
