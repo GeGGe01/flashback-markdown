@@ -1,3 +1,5 @@
+import { FLASHBACK_SMILEY_PATTERN, FLASHBACK_SMILEY_BY_CODE } from "./smileys.js";
+
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -32,6 +34,20 @@ function protectLiteralBlocks(input) {
       return token;
     });
   return { protectedText, blocks };
+}
+
+function renderSmiliesInVisibleText(html) {
+  return html
+    .split(/(<[^>]+>)/g)
+    .map(part => {
+      if (part.startsWith("<")) return part;
+      return part.replace(FLASHBACK_SMILEY_PATTERN, code => {
+        const smiley = FLASHBACK_SMILEY_BY_CODE.get(code);
+        if (!smiley) return code;
+        return `<span class="fb-smiley" role="img" aria-label="${escapeHtml(smiley.label)}" title="${escapeHtml(code)}">${smiley.glyph}</span>`;
+      });
+    })
+    .join("");
 }
 
 export function renderBBCode(bbcode) {
@@ -72,6 +88,10 @@ export function renderBBCode(bbcode) {
   html = html.replace(/\[list=a\]([\s\S]*?)\[\/list\]/gi, (_m, body) => renderList(body, "a"));
   html = html.replace(/\[list=i\]([\s\S]*?)\[\/list\]/gi, (_m, body) => renderList(body, "i"));
   html = html.replace(/\[list\]([\s\S]*?)\[\/list\]/gi, (_m, body) => renderList(body, "bullet"));
+
+  // Flashback auto-converts smiley shortcodes in ordinary post text. Literal
+  // code/noparse blocks are still protected here and therefore stay literal.
+  html = renderSmiliesInVisibleText(html);
 
   // Convert ordinary newlines only while literal blocks are still protected.
   html = html.replace(/\n/g, "<br>");
