@@ -17,7 +17,19 @@ test("Pages publishes every referenced stylesheet", () => {
   assert.match(pages, /cp web\/toolbar\.css _site\/toolbar\.css/);
 });
 
-test("Pages cache-busts static assets by commit SHA", () => {
+test("smiley picker has one canonical source", () => {
+  assert.match(html, /<div class="smiley-popover" aria-label="Smilies"><\/div>/);
+  assert.doesNotMatch(html, /data-smiley=/);
+  assert.match(html, /smileys-ui\.js/);
+});
+
+test("Pages cache-busts entry assets and imported module graph", () => {
   assert.match(pages, /GITHUB_SHA/);
   assert.match(pages, /app\.js\?v=/);
+  assert.match(pages, /smileys-ui\.js\?v=/);
+  assert.match(pages, /src\/converter\.js\?v=/);
+  assert.match(pages, /src\/reverse-converter\.js\?v=/);
+  assert.match(pages, /src\/preview\.js\?v=/);
+  assert.match(pages, /src\/smileys\.js\?v=/);
+  assert.match(pages, /\.\/smileys\.js\?v=/);
 });
