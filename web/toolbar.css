@@ -52,23 +52,73 @@
   top: 60px;
   right: 0;
   z-index: 14;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 5px;
-  min-width: 180px;
-  padding: 9px;
-  border: 1px solid #cfcfcf;
-  border-radius: 3px;
-  background: #ffffff;
+  width: min(520px, calc(100vw - 32px));
+  max-height: min(70vh, 620px);
+  overflow: auto;
+  padding: 0;
+  border: 1px solid #bfc4c8;
+  border-radius: 2px;
+  background: #f3f4f5;
   box-shadow: 0 4px 14px rgba(0,0,0,.18);
 }
 
-.smiley-popover button {
-  min-height: 40px;
-  border: 1px solid #d2d2d2;
-  border-radius: 3px;
-  background: linear-gradient(#ffffff, #eeeeee);
-  font: 16px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+.smiley-popover-heading {
+  padding: 7px 10px;
+  border-bottom: 1px solid #c7cbce;
+  background: linear-gradient(#ededed, #dcdcdc);
+  color: #444;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.smiley-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.smiley-option {
+  min-width: 0;
+  min-height: 46px;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 5px 9px;
+  border: 0;
+  border-right: 1px solid #c7cbce;
+  border-bottom: 1px solid #c7cbce;
+  background: #f4f5f6;
+  text-align: left;
+}
+
+.smiley-option:nth-child(4n + 3),
+.smiley-option:nth-child(4n + 4) {
+  background: #e7e8e9;
+}
+
+.smiley-option:nth-child(even) {
+  border-right: 0;
+}
+
+.smiley-option:hover,
+.smiley-option:focus-visible {
+  background: #ffffff;
+  outline: 2px solid #8fb9d4;
+  outline-offset: -2px;
+}
+
+.smiley-option-glyph {
+  font-size: 24px;
+  line-height: 1;
+  text-align: center;
+}
+
+.smiley-option-code {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 button.bbcode-only:disabled,
@@ -112,4 +162,26 @@ button.bbcode-only:disabled,
     flex: 0 0 40px;
     min-width: 40px;
   }
+
+  .smiley-popover {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    top: auto;
+    bottom: 12px;
+    width: auto;
+    max-height: min(66vh, 560px);
+  }
+}
+
+@media (max-width: 390px) {
+  .smiley-option {
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 5px;
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .smiley-option-glyph { font-size: 21px; }
+  .smiley-option-code { font-size: 12px; }
 }
