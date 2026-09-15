@@ -19,7 +19,11 @@ test("registry matches the complete archived Flashback smiley list", () => {
 test("ordinary post text auto-renders smiley shortcodes", () => {
   const html = renderBBCode("hej :) :lol: :w000t:");
   assert.equal((html.match(/class=\"fb-smiley\"/g) ?? []).length, 3);
-  assert.doesNotMatch(html, /:lol:/);
+
+  // Shortcodes may remain in metadata such as title=\":lol:\" for hover/tooltips.
+  // What matters is that they no longer survive as visible text nodes.
+  const visibleText = html.replace(/<[^>]*>/g, "");
+  assert.doesNotMatch(visibleText, /:\)|:lol:|:w000t:/);
 });
 
 test("code and noparse keep smiley shortcodes literal", () => {
