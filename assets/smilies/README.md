@@ -10,7 +10,7 @@ approximation when a GIF is missing.
 To populate or refresh the vendored GIFs from Flashback:
 
 ```sh
-./scripts/vendor-smileys.sh
+bash scripts/vendor-smileys.sh
 ```
 
 The script reads the canonical registry instead of maintaining a second asset
