@@ -27,6 +27,28 @@ function sourceLineCount(value) {
   return (value ?? "").replace(/\r\n/g, "\n").split("\n").length;
 }
 
+function hydrateSmileyAssets(root) {
+  for (const img of root.querySelectorAll(".fb-smiley-img")) {
+    const fallback = img.nextElementSibling;
+    const showAsset = () => {
+      img.hidden = false;
+      if (fallback) fallback.hidden = true;
+    };
+    const showFallback = () => {
+      img.hidden = true;
+      if (fallback) fallback.hidden = false;
+    };
+
+    img.addEventListener("load", showAsset, { once: true });
+    img.addEventListener("error", showFallback, { once: true });
+
+    if (img.complete) {
+      if (img.naturalWidth > 0) showAsset();
+      else showFallback();
+    }
+  }
+}
+
 function render() {
   const result = currentBBCode();
   const warnings = [...result.warnings];
@@ -42,6 +64,7 @@ function render() {
   }
 
   preview.innerHTML = renderBBCode(result.output);
+  hydrateSmileyAssets(preview);
   preview.classList.toggle("signature-preview", profile === "signature");
 
   warningsEl.replaceChildren();
@@ -290,7 +313,13 @@ editor.addEventListener("input", () => { render(); scheduleAutosave(); });
 
 document.querySelectorAll("[data-wrap]").forEach(btn => btn.addEventListener("click", () => wrapSelection(btn.dataset.wrap)));
 document.querySelectorAll("[data-block]").forEach(btn => btn.addEventListener("click", () => blockSelection(btn.dataset.block)));
-document.querySelectorAll("[data-smiley]").forEach(btn => btn.addEventListener("click", () => insertSmiley(btn.dataset.smiley)));
+const smileyPopover = document.querySelector(".smiley-popover");
+smileyPopover?.addEventListener("click", event => {
+  const button = event.target instanceof Element ? event.target.closest("[data-smiley]") : null;
+  if (!button) return;
+  insertSmiley(button.dataset.smiley);
+  button.closest("details")?.removeAttribute("open");
+});
 document.querySelector("#link-btn").addEventListener("click", insertLink);
 document.querySelector("#email-btn").addEventListener("click", insertEmail);
 document.querySelector("#ul-btn").addEventListener("click", () => listSelection("bullet"));
