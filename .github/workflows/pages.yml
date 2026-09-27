@@ -43,6 +43,7 @@ jobs:
           cp web/smileys-ui.js _site/smileys-ui.js
           cp web/style.css _site/style.css
           cp web/toolbar.css _site/toolbar.css
+          cp -R assets _site/assets
           cp src/converter.js _site/src/converter.js
           cp src/reverse-converter.js _site/src/reverse-converter.js
           cp src/preview.js _site/src/preview.js
