@@ -44,7 +44,7 @@ function renderSmiliesInVisibleText(html) {
       return part.replace(FLASHBACK_SMILEY_PATTERN, code => {
         const smiley = FLASHBACK_SMILEY_BY_CODE.get(code);
         if (!smiley) return code;
-        return `<span class="fb-smiley" role="img" aria-label="${escapeHtml(smiley.label)}" title="${escapeHtml(code)}">${smiley.glyph}</span>`;
+        return `<span class="fb-smiley" role="img" aria-label="${escapeHtml(smiley.label)}" title="${escapeHtml(code)}"><img class="fb-smiley-img" src="${escapeHtml(smiley.asset)}" alt="" hidden><span class="fb-smiley-fallback">${smiley.glyph}</span></span>`;
       });
     })
     .join("");
