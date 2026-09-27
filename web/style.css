@@ -234,6 +234,30 @@ button, summary { cursor: pointer; }
 .flashback-post strong { font-weight: 700; }
 .flashback-post mark { background: transparent; color: #b40000; font-weight: 700; }
 .flashback-post a { color: #666; text-decoration: underline; }
+
+.fb-smiley {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  min-height: 18px;
+  vertical-align: text-bottom;
+}
+
+.fb-smiley-img {
+  display: block;
+  max-width: 32px;
+  max-height: 32px;
+  vertical-align: text-bottom;
+}
+
+.fb-smiley-img[hidden],
+.fb-smiley-fallback[hidden] {
+  display: none !important;
+}
+
+.fb-smiley-fallback {
+  line-height: 1;
+}
 .flashback-post ul,
 .flashback-post ol { margin: 10px 0 18px 32px; padding-left: 18px; }
 .flashback-post li { margin: 6px 0; padding-left: 4px; }

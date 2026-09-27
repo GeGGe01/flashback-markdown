@@ -72,6 +72,14 @@
   text-align: center;
 }
 
+.smiley-popover-help {
+  padding: 6px 10px;
+  border-bottom: 1px solid #c7cbce;
+  background: #f7f7f7;
+  color: #666;
+  font-size: 12px;
+}
+
 .smiley-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -106,6 +114,24 @@
   background: #ffffff;
   outline: 2px solid #8fb9d4;
   outline-offset: -2px;
+}
+
+.smiley-option-visual {
+  width: 36px;
+  min-height: 30px;
+  display: grid;
+  place-items: center;
+}
+
+.smiley-option-img {
+  display: block;
+  max-width: 32px;
+  max-height: 32px;
+}
+
+.smiley-option-img[hidden],
+.smiley-option-glyph[hidden] {
+  display: none !important;
 }
 
 .smiley-option-glyph {
