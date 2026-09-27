@@ -1,43 +1,62 @@
-// Canonical Flashback smiley shortcode registry.
-// Source reference: archived Flashback "Standard Smilies" list from 2024.
-// `glyph` is a local preview approximation; the source shortcode remains authoritative.
+// Canonical Flashback smiley registry.
+// Source: archived Flashback "Smilie-lista" (2024-06-06) plus the live
+// static.flashback.org asset paths captured in that page.
+//
+// code = editor/source contract.
+// asset = vendored path preferred by preview/picker when present.
+// source = corresponding Flashback-hosted GIF for later vendoring.
+// glyph = fallback only when the GIF is unavailable locally.
+const ASSET_ROOT = "./assets/smilies/";
+const SOURCE_ROOT = "https://static.flashback.org/img/smilies2/";
+
+function smiley(code, filename, glyph, label) {
+  return {
+    code,
+    filename,
+    asset: ASSET_ROOT + filename,
+    source: SOURCE_ROOT + filename,
+    glyph,
+    label,
+  };
+}
+
 export const FLASHBACK_SMILEYS = [
-  { code: ":)", glyph: "🙂", label: "Smile" },
-  { code: ":(", glyph: "🙁", label: "Sad" },
-  { code: ":o", glyph: "😮", label: "Ohmy" },
-  { code: ":|", glyph: "😐", label: "Noexpression" },
-  { code: ";)", glyph: "😉", label: "Wink" },
-  { code: ":'(", glyph: "😢", label: "Cry" },
-  { code: ":p", glyph: "😛", label: "Tongue" },
-  { code: ":D", glyph: "😁", label: "Grin" },
-  { code: ":lol:", glyph: "😆", label: "Laugh" },
-  { code: ":eek:", glyph: "😳", label: "EEK" },
-  { code: ":unsure:", glyph: "😕", label: "Unsure" },
-  { code: ":thumbsup:", glyph: "👍", label: "Thumbsup" },
-  { code: ":angry:", glyph: "😠", label: "Angry" },
-  { code: ":devil:", glyph: "😈", label: "Devil" },
-  { code: ":krafse:", glyph: "😵‍💫", label: "Krafse" },
-  { code: ":sick19:", glyph: "🤢", label: "Sick19" },
-  { code: ":thumbsdown:", glyph: "👎", label: "Thumbsdown" },
-  { code: ":beer:", glyph: "🍻", label: "Beer" },
-  { code: ":skamsen:", glyph: "🫣", label: "Skamsen" },
-  { code: ":sad44:", glyph: "😭", label: "Sad44" },
-  { code: ":evilgrin39:", glyph: "😼", label: "Evilgrin39" },
-  { code: ":yes:", glyph: "🙂", label: "Yes" },
-  { code: ":whoco5:", glyph: "🤷", label: "Whoco5" },
-  { code: ":sneaky:", glyph: "😏", label: "Sneaky" },
-  { code: ":rolleyes:", glyph: "🙄", label: "Rolleyes" },
-  { code: ":innocent:", glyph: "😇", label: "Innocent" },
-  { code: ":whistle:", glyph: "😗", label: "Whistle" },
-  { code: ":cool:", glyph: "😎", label: "Cool" },
-  { code: ":confused:", glyph: "🤔", label: "Confused" },
-  { code: ":w000t:", glyph: "🤯", label: "W000t" },
-  { code: ":boxing:", glyph: "🥊", label: "Boxing" },
-  { code: ":drunk:", glyph: "🥴", label: "Drunk" },
-  { code: ":evilmad:", glyph: "🤬", label: "Evilmad" },
-  { code: ":no:", glyph: "🙅", label: "No" },
-  { code: ":rant:", glyph: "😡", label: "Rant" },
-  { code: ":sly:", glyph: "😏", label: "Sly" },
+  smiley(":)", "smile1.gif", "🙂", "Smile"),
+  smiley(":(", "sad.gif", "🙁", "Sad"),
+  smiley(":o", "ohmy.gif", "😮", "Ohmy"),
+  smiley(":|", "noexpression.gif", "😐", "Noexpression"),
+  smiley(";)", "wink.gif", "😉", "Whink"),
+  smiley(":'(", "cry.gif", "😢", "Cry"),
+  smiley(":p", "tongue.gif", "😛", "Tongue"),
+  smiley(":D", "grin.gif", "😁", "Grin"),
+  smiley(":lol:", "laugh.gif", "😆", "Laugh"),
+  smiley(":eek:", "w00t.gif", "😳", "EEK!"),
+  smiley(":unsure:", "unsure.gif", "😕", "Unsure"),
+  smiley(":thumbsup:", "thumbsup.gif", "👍", "Thumbsup"),
+  smiley(":angry:", "angry.gif", "😠", "Angry"),
+  smiley(":devil:", "devil.gif", "😈", "Devil"),
+  smiley(":krafse:", "krafse.gif", "😵‍💫", "Krafse"),
+  smiley(":sick19:", "sick19.gif", "🤢", "Sick19"),
+  smiley(":thumbsdown:", "thumbsdown.gif", "👎", "Thumbsdown"),
+  smiley(":beer:", "beer2.gif", "🍻", "Beer"),
+  smiley(":skamsen:", "skamsen.gif", "🫣", "Skamsen"),
+  smiley(":sad44:", "sad44.gif", "😭", "Sad44"),
+  smiley(":evilgrin39:", "evilgrin39.gif", "😼", "Evilgrin39"),
+  smiley(":yes:", "yes.gif", "🙂", "Yes"),
+  smiley(":whoco5:", "whoco5.gif", "🤷", "Whoco5"),
+  smiley(":sneaky:", "sneaky.gif", "😏", "Sneaky"),
+  smiley(":rolleyes:", "rolleyes.gif", "🙄", "Rolleyes"),
+  smiley(":innocent:", "innocent.gif", "😇", "Innocent"),
+  smiley(":whistle:", "whistle.gif", "😗", "Whistle"),
+  smiley(":cool:", "cool2.gif", "😎", "Cool"),
+  smiley(":confused:", "confused.gif", "🤔", "Confused"),
+  smiley(":w000t:", "w000t.gif", "🤯", "W000t"),
+  smiley(":boxing:", "boxing.gif", "🥊", "Boxing"),
+  smiley(":drunk:", "drunk.gif", "🥴", "Drunk"),
+  smiley(":evilmad:", "evilmad.gif", "🤬", "Evilmad"),
+  smiley(":no:", "no.gif", "🙅", "No"),
+  smiley(":rant:", "rant.gif", "😡", "Rant"),
+  smiley(":sly:", "sly.gif", "😏", "Sly"),
 ];
 
 export function escapeRegExp(value) {
