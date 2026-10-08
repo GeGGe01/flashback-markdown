@@ -37,7 +37,7 @@ export function convertBBCode(bbcode) {
   out = out.replace(/\[code\]([\s\S]*?)\[\/code\]/gi, (_m, body) => `\n\`\`\`text\n${body.trim()}\n\`\`\`\n`);
   out = out.replace(/\[noparse\]([\s\S]*?)\[\/noparse\]/gi, (_m, body) => {
     const trimmed = body.trim();
-    if (!trimmed.includes("\n")) return `\`${trimmed.replace(/`/g, "\\`")}\``;
+    if (!trimmed.includes("\n")) return `\`${trimmed.replace(/\\/g, "\\\\").replace(/`/g, "\\`")}\``;
     return `\n\`\`\`text\n${trimmed}\n\`\`\`\n`;
   });
 
